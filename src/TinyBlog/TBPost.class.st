@@ -1,3 +1,6 @@
+"
+I'm a simple class representing a Blog post
+"
 Class {
 	#name : #TBPost,
 	#superclass : #Object,
@@ -8,7 +11,7 @@ Class {
 		'category',
 		'visible'
 	],
-	#category : #TinyBlog
+	#category : #'TinyBlog-Model'
 }
 
 { #category : #'instance creation' }
