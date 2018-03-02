@@ -3,16 +3,16 @@ A simple blog holding blog posts.
 
 You can get the current blog and its posts as follow: 
 
-TBBlog createDemoPosts ; current
+TBBlog initialize
+TBBlog createDemoPosts
+
+TBBlog count
 "
 Class {
 	#name : #TBBlog,
 	#superclass : #Object,
 	#instVars : [
 		'posts'
-	],
-	#classInstVars : [
-		'uniqueInstance'
 	],
 	#category : #'TinyBlog-Model'
 }
@@ -32,18 +32,30 @@ TBBlog class >> createDemoPosts [
 
 { #category : #initialization }
 TBBlog class >> current [
-	"answer the instance of the TBRepository"
-	^ uniqueInstance ifNil: [ uniqueInstance := self new ]
+   ^ self selectAll 
+			ifNotEmpty: [ :x | x anyOne ]
+			ifEmpty: [ self new save ]
 ]
 
 { #category : #initialization }
 TBBlog class >> initialize [
-	self reset
+      self reset
 ]
 
-{ #category : #initialization }
+{ #category : #voyage }
+TBBlog class >> initializeVoyageOnMemoryDB [
+   VOMemoryRepository new enableSingleton
+]
+
+{ #category : #voyage }
+TBBlog class >> isVoyageRoot [
+   "Indicates that instances of this class are top level documents in noSQL databases"
+   ^ true
+]
+
+{ #category : #voyage }
 TBBlog class >> reset [
-	uniqueInstance := nil
+      self initializeVoyageOnMemoryDB
 ]
 
 { #category : #accessing }
@@ -80,8 +92,8 @@ TBBlog >> initialize [
 
 { #category : #'add/remove' }
 TBBlog >> removeAllPosts [
-   posts := OrderedCollection new
-
+	posts := OrderedCollection new.
+	self save.
 ]
 
 { #category : #query }
@@ -92,6 +104,6 @@ TBBlog >> size [
 { #category : #'add/remove' }
 TBBlog >> writeBlogPost: aPost [
 	"Write the blog post in database"
-	posts add: aPost
-
+	self allBlogPosts add: aPost.
+	self save
 ]
