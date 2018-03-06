@@ -34,13 +34,6 @@ TBCategoriesComponent >> postsList: anObject [
 ]
 
 { #category : #rendering }
-TBCategoriesComponent >> readSelectedPosts [
-   ^ self currentCategory
-      ifNil: [ self blog allVisibleBlogPosts ]
-      ifNotNil: [ self blog allVisibleBlogPostsFromCategory: self currentCategory ]
-]
-
-{ #category : #rendering }
 TBCategoriesComponent >> renderCategoryLinkOn: html with: aCategory [
    html tbsLinkifyListGroupItem
       class: 'active' if: aCategory = self postsList currentCategory ;
@@ -50,25 +43,11 @@ TBCategoriesComponent >> renderCategoryLinkOn: html with: aCategory [
 
 { #category : #rendering }
 TBCategoriesComponent >> renderContentOn: html [
-   super renderContentOn: html.
-   html tbsContainer: [
-      html tbsRow showGrid;
-         with: [
-            html tbsColumn
-               extraSmallSize: 12;
-               smallSize: 2;
-               mediumSize:  4;
-               with: [
-                  html render: (TBCategoriesComponent
-                    categories: (self blog allCategories)
-                    postsList: self) ].
-      html tbsColumn
-               extraSmallSize: 12;
-               smallSize: 10;
-               mediumSize: 8;
-               with: [
-         self readSelectedPosts do: [ :p |
-             html render: (TBPostComponent new post: p) ] ] ] ]
+   html tbsListGroup: [
+      html tbsListGroupItem
+         with: [  html strong: 'Categories' ].
+      categories do: [ :cat | 
+         self renderCategoryLinkOn: html with: cat ]]
 ]
 
 { #category : #operations }

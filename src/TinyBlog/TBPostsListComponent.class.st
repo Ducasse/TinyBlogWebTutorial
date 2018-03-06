@@ -2,22 +2,26 @@ Class {
 	#name : #TBPostsListComponent,
 	#superclass : #TBScreenComponent,
 	#instVars : [
-		'currentCategory'
+		'currentCategory',
+		'postComponents'
 	],
 	#category : #'TinyBlog-Components'
 }
 
 { #category : #rendering }
 TBPostsListComponent >> basicRenderCategoriesOn: html [
-   ^ html render: (TBCategoriesComponent 
-         categories: self blog allCategories 
-         postsList: self)
+	html render:
+		(TBCategoriesComponent categories: self blog allCategories postsList: self)
 ]
 
 { #category : #rendering }
 TBPostsListComponent >> basicRenderPostsOn: html [
-   ^ self readSelectedPosts do: [ :p | 
-        html render: (TBPostComponent new post: p) ]
+	self postComponents do: [ :p | html render: p ]
+]
+
+{ #category : #accessing }
+TBPostsListComponent >> children [ 
+	^ self postComponents
 ]
 
 { #category : #accessing }
@@ -28,6 +32,26 @@ TBPostsListComponent >> currentCategory [
 { #category : #accessing }
 TBPostsListComponent >> currentCategory: anObject [
 	currentCategory := anObject
+]
+
+{ #category : #initialization }
+TBPostsListComponent >> initialize [
+	super initialize.
+	postComponents := OrderedCollection new.
+]
+
+{ #category : #accessing }
+TBPostsListComponent >> postComponents [ 
+	postComponents := self readSelectedPosts
+			collect: [ :each | TBPostComponent new post: each ].
+	^ postComponents 
+]
+
+{ #category : #rendering }
+TBPostsListComponent >> readSelectedPosts [
+   ^ self currentCategory
+      ifNil: [ self blog allVisibleBlogPosts ]
+      ifNotNil: [ self blog allVisibleBlogPostsFromCategory: self currentCategory ]
 ]
 
 { #category : #rendering }
